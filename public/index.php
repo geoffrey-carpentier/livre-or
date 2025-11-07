@@ -11,6 +11,8 @@ require __DIR__ . '/../core/Database.php';        // Gestion de la connexion et 
 require __DIR__ . '/../app/Controllers/HomeController.php';   // Contrôleur de la page d'accueil
 require __DIR__ . '/../app/Controllers/CommentController.php'; // <-- nouveau contrôleur pour les articles
 require __DIR__ . '/../app/Models/CommentModel.php';          // Modèle pour la gestion des articles
+require __DIR__ . '/../app/Controllers/AuthController.php';  // Contrôleur d'authentification
+require __DIR__ . '/../app/Models/UserModel.php';            // Modèle pour les utilisateurs
 
 // Importation des classes avec namespaces pour éviter les conflits de noms
 use Core\Router;
@@ -33,6 +35,16 @@ $router->get('/articles/show', 'App\\Controllers\\CommentController@show'); // c
 // Route pour afficher un article en détail
 // Exemple d'URL attendue : /articles/show?id=1
 $router->get('/articles/show', 'App\\Controllers\\CommentController@show');
+
+// Routes d'authentification (GET + POST)
+$router->get('/register', 'App\\Controllers\\AuthController@register');
+$router->post('/register', 'App\\Controllers\\AuthController@register');
+
+$router->get('/login', 'App\\Controllers\\AuthController@login');
+$router->post('/login', 'App\\Controllers\\AuthController@login');
+
+// Déconnexion (GET suffit)
+$router->get('/logout', 'App\\Controllers\\AuthController@logout');
 
 // Exécution du routeur :
 // On analyse l'URI et la méthode HTTP pour appeler le contrôleur et la méthode correspondants

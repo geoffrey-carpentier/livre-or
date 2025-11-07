@@ -2,53 +2,48 @@
 namespace App\Models;
 
 use Core\Database;
+use PDO;
+use PDOException;
 
 /**
- * Classe ArticleModel
- * ---------------------
- * Gère l'accès aux données pour l'entité "Article".
- * Elle encapsule les requêtes SQL liées aux articles et retourne des données
- * prêtes à être utilisées par les contrôleurs.
+ * ArticleModel réutilisé (temporairement) comme modèle pour les commentaires du livre d'or
+ * - all()   : retourne la liste des commentaires (avec login de l'auteur)
+ * - find()  : retourne un commentaire par id
  */
 class ArticleModel
 {
-    /**
-     * Récupère tous les articles depuis la base
-     *
-     * @return array Liste des articles sous forme de tableau associatif
-     *               Chaque entrée contient : ['id' => ..., 'title' => ..., 'body' => ...]
-     */
     public function all(): array
     {
-        // Exécute une requête SQL directe pour récupérer tous les articles
-        $stmt = Database::getPdo()->query(
-            'SELECT id, title, body FROM articles ORDER BY id DESC'
-        );
-
-        // Retourne tous les résultats sous forme de tableau associatif
-        return $stmt->fetchAll();
+        try {
+            $pdo = Database::getPdo();
+            // Jointure pour récupérer le login de l'auteur depuis la table utilisateurs
+            $sql = 'SELECT c.id, c.commentaire AS body, c.date, u.login
+                    FROM commentaires c
+                    LEFT JOIN utilisateurs u ON c.id_utilisateur = u.id
+                    ORDER BY c.date DESC';
+            $stmt = $pdo->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // En apprentissage : on évite d'exposer l'erreur SQL, on retourne une liste vide
+            return [];
+        }
     }
 
-    /**
-     * Récupère un article spécifique par son identifiant
-     *
-     * @param int $id Identifiant unique de l'article
-     * @return array|null Retourne l'article trouvé ou null si aucun résultat
-     */
     public function find(int $id): ?array
     {
-        // Prépare une requête SQL sécurisée (évite les injections SQL via PDO)
-        $stmt = Database::getPdo()->prepare(
-            'SELECT id, title, body FROM articles WHERE id = :id'
-        );
-
-        // Exécution avec liaison de paramètre
-        $stmt->execute(['id' => $id]);
-
-        // Récupère une seule ligne
-        $row = $stmt->fetch();
-
-        // Retourne l'article si trouvé, sinon null
-        return $row ?: null;
+        try {
+            $pdo = Database::getPdo();
+            $sql = 'SELECT c.id, c.commentaire AS body, c.date, u.login
+                    FROM commentaires c
+                    LEFT JOIN utilisateurs u ON c.id_utilisateur = u.id
+                    WHERE c.id = :id
+                    LIMIT 1';
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':id' => $id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row === false ? null : $row;
+        } catch (PDOException $e) {
+            return null;
+        }
     }
 }

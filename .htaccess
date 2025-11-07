@@ -1,4 +1,11 @@
+# Fichier .htaccess pour rediriger toutes les requêtes vers public/index.php
+# Nécessite mod_rewrite activé et AllowOverride All dans la configuration Apache.
+
 RewriteEngine On
+
+# Si le fichier ou dossier existe physiquement, laisser Apache le servir
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . index.php [L]
+
+# Sinon, rediriger vers public/index.php en conservant la query string
+RewriteRule ^(.*)$ public/index.php [QSA,L]

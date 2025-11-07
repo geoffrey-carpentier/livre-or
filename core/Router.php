@@ -21,7 +21,7 @@ class Router
     {
         $this->routes['POST'][$path] = $action;
     }
-
+    // Ajout : méthode pour dispatcher la requête entrante
     public function dispatch(string $uri, string $method): void
     {
         $path = parse_url($uri, PHP_URL_PATH) ?? '/';

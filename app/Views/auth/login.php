@@ -23,7 +23,8 @@
   </ul>
 <?php endif; ?>
 
-<form method="post" action="/login">
+<!-- action vide => POST vers la même URL (route /login) -->
+<form method="post" action="">
   <div>
     <label for="login">Login</label><br>
     <input id="login" name="login" type="text" value="<?= $old['login'] ?? '' ?>" required>
@@ -37,4 +38,4 @@
   </div>
 </form>
 
-<p><a href="/register">Pas encore de compte ? Inscription</a></p>
+<p><a href="register">Pas encore inscrit ? Par ici</a></p>

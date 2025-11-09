@@ -12,7 +12,7 @@ require __DIR__ . '/../core/Database.php'; // Gestion de la connexion et des req
 require __DIR__ . '/../core/BaseController.php'; // Classe de base pour tous les contrôleurs
 require __DIR__ . '/../core/Router.php'; // Classe responsable de la gestion des routes
 
-// Contrôleurs / modèles utilisés par l'app (ajoute ou enlève selon évolution)
+// Contrôleurs et modèles utilisés par l'app (ajoute ou enlève selon évolution)
 require __DIR__ . '/../app/Controllers/HomeController.php'; // Contrôleur de la page d'accueil
 require __DIR__ . '/../app/Controllers/CommentController.php'; // Contrôleur de la gestion des commentaires
 require __DIR__ . '/../app/Controllers/AuthController.php'; // Contrôleur d'authentification
@@ -36,6 +36,10 @@ $router->get('/logout', 'App\\Controllers\\AuthController@logout');
 $router->post('/register', 'App\\Controllers\\AuthController@register');
 $router->post('/login', 'App\\Controllers\\AuthController@login');
 $router->post('/comments/new', 'App\\Controllers\\CommentController@create');
+
+// --- Removed compatibility routes for /articles (now archived) ---
+// $router->get('/articles', 'App\\Controllers\\CommentController@index');
+// $router->get('/articles/show', 'App\\Controllers\\CommentController@show');
 
 // Dispatcher : envoie l'URI et la méthode
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

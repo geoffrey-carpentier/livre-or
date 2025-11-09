@@ -21,7 +21,7 @@
           <?= nl2br(htmlspecialchars($c['body'], ENT_QUOTES, 'UTF-8')) ?>
         </div>
         <div style="margin-top:6px;">
-          <a href="/articles/show?id=<?= (int)$c['id'] ?>">Voir</a>
+          <a href="comments/show?id=<?= (int)$c['id'] ?>">Voir</a>
         </div>
       </li>
     <?php endforeach; ?>
@@ -31,6 +31,6 @@
 <?php endif; ?>
 
 <?php
-// Ici se trouvera le lien vers l'ajout de commentaires (seravisible une fois l'authentification implémentée)
+// Ici se trouvera le lien vers l'ajout de commentaires (sera visible une fois l'authentification implémentée)
 // On affichera ce lien uniquement si une session est active (à venir)
 ?>

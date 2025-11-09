@@ -16,4 +16,4 @@
   <?= nl2br(htmlspecialchars($article['body'] ?? '', ENT_QUOTES, 'UTF-8')) ?>
 </div>
 
-<p style="margin-top:12px;"><a href="/comments">← Retour au livre d'or</a></p>
+<p style="margin-top:12px;"><a href="comments">← Retour au livre d'or</a></p>

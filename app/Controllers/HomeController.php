@@ -24,7 +24,7 @@ class HomeController extends BaseController
         // - Injecte le tableau de paramètres (ici, une variable $title utilisable dans la vue)
         // - Insère le contenu de la vue dans le layout global "base.php"
         $this->render('home/index', [
-            'title' => 'Bienvenue sur le mini-MVC'
+            'title' => 'LIVRE D\'OR'
         ]);
     }
 }

@@ -14,14 +14,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <!-- Titre de la page (sécurisé avec htmlspecialchars) -->
   <title><?= htmlspecialchars($title ?? 'Livre d\'or', ENT_QUOTES, 'UTF-8') ?></title>
-  <style>
-    /* Style minimal pour la nav (à améliorer plus tard) */
-    body { font-family: Arial, sans-serif; margin:0; padding:0; }
-    header { background:#111; color:#fff; padding:12px 18px; }
-    nav a { color:#fff; margin-right:12px; text-decoration:none; }
-    main { padding:18px; }
-    .flash { background:#e6ffed;padding:8px;border:1px solid #b6f0c6;margin-bottom:12px; }
-  </style>
+  <link rel="stylesheet" href="<?= $base . '/assets/css/style.css' ?>">
 </head>
 <body>
   <header>
@@ -45,11 +38,6 @@
   </header>
 <!-- Contenu principal injecté depuis BaseController -->
   <main>
-    <?php if (!empty($_SESSION['flash'])): ?>
-      <div class="flash"><?= htmlspecialchars($_SESSION['flash'], ENT_QUOTES, 'UTF-8') ?></div>
-      <?php unset($_SESSION['flash']); ?>
-    <?php endif; ?>
-
     <!-- Le contenu de la vue est injecté via $content -->
     <?= $content ?? '' ?>
   </main>

@@ -5,14 +5,14 @@ namespace Core;
  * Classe BaseController
  * ---------------------
  * Classe mère dont hériteront tous les contrôleurs.
- * Elle centralise le rendu des vues.
+ * Elle centralise le rendu des vues dans un layout.
  */
 class BaseController
 {
     /**
      * Rend une vue dans le layout principal.
      *
-     * @param string $view   Chemin relatif de la vue, ex: "article/index"
+     * @param string $view   Chemin relatif de la vue, ex: "comment/index"
      * @param array  $params Variables à injecter dans la vue
      */
     protected function render(string $view, array $params = []): void
@@ -21,21 +21,17 @@ class BaseController
         // Exemple : ['title' => 'Accueil'] devient $title = 'Accueil'
         extract($params, EXTR_SKIP);
 
-        // Capture le contenu de la vue demandée
-        ob_start();
-
         // Construit le chemin complet vers le fichier de vue (app/Views/...)
         $viewFile = __DIR__ . '/../app/Views/' . $view . '.php';
 
         // Sécurité : si la vue n'existe pas, afficher message simple (éviter l'erreur fatale)
         if (!is_file($viewFile)) {
-            echo "Veuillez vérifier la vue : " . htmlspecialchars($view) . "(le fichier est manquant)";
-            $content = ob_get_clean();
-            echo $content;
+            echo "Vue introuvable : " . htmlspecialchars($view);
             return;
         }
 
-        // Inclure la vue (les variables extraites sont disponibles)
+        // Capture le rendu de la vue
+        ob_start();
         include $viewFile;
 
         // Récupère le contenu généré par la vue

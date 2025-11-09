@@ -1,0 +1,12 @@
+# ...existing code...
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Si le fichier ou dossier existe, laisser Apache le servir
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Sinon, rediriger vers index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

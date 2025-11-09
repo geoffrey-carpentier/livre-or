@@ -416,3 +416,10 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Fichiers divers à ignorer
+Livre d_or_exemple.jpeg
+Capture d'écran 2025-11-09 205535.png
+Livre d_or.md
+mini-mvc.sql
+README.md

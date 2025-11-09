@@ -18,7 +18,7 @@
           <?= nl2br(htmlspecialchars($c['body'] ?? '', ENT_QUOTES, 'UTF-8')) ?>
         </div>
         <div style="margin-top:6px;">
-          <a href="/comments/show?id=<?= (int)$c['id'] ?>">Voir</a>
+          <a href="comments/show?id=<?= (int)$c['id'] ?>">Voir</a>
         </div>
       </li>
     <?php endforeach; ?>
@@ -26,3 +26,5 @@
 <?php else: ?>
   <p>Aucun commentaire pour le moment.</p>
 <?php endif; ?>
+
+<p><a href="comments">← Retour au livre d'or</a></p>

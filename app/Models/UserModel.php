@@ -44,12 +44,34 @@ class UserModel
     {
         try {
             $pdo = Database::getPdo();
-            $stmt = $pdo->prepare('SELECT id, login FROM utilisateurs WHERE id = :id LIMIT 1');
+            $stmt = $pdo->prepare('SELECT id, login, password FROM utilisateurs WHERE id = :id LIMIT 1');
             $stmt->execute([':id' => $id]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row === false ? null : $row;
         } catch (PDOException $e) {
             return null;
+        }
+    }
+
+    public function updatePassword(int $id, string $hash): bool
+    {
+        try {
+            $pdo = Database::getPdo();
+            $stmt = $pdo->prepare('UPDATE utilisateurs SET password = :password WHERE id = :id');
+            return $stmt->execute([':password' => $hash, ':id' => $id]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function deleteById(int $id): bool
+    {
+        try {
+            $pdo = Database::getPdo();
+            $stmt = $pdo->prepare('DELETE FROM utilisateurs WHERE id = :id');
+            return $stmt->execute([':id' => $id]);
+        } catch (PDOException $e) {
+            return false;
         }
     }
 }

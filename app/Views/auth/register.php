@@ -4,6 +4,7 @@
  * Variables optionnelles :
  *  - $errors : tableau d'erreurs
  *  - $old : tableau des anciennes valeurs
+ *  - $csrf : token CSRF
  */
 ?>
 <h1>Inscription</h1>
@@ -16,15 +17,18 @@
 <?php endif; ?>
 
 <?php if (!empty($errors)): ?>
-  <ul style="color:red;">
-    <?php foreach ($errors as $e): ?>
-      <li><?= htmlspecialchars($e, ENT_QUOTES, 'UTF-8') ?></li>
-    <?php endforeach; ?>
-  </ul>
+  <div style="background:#fff3cd;padding:8px;border:1px solid #ffeeba;margin-bottom:12px;">
+    <ul style="margin:0;padding-left:18px;">
+      <?php foreach ($errors as $e): ?>
+        <li><?= htmlspecialchars($e, ENT_QUOTES, 'UTF-8') ?></li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
 <?php endif; ?>
 
 <!-- action vide : le formulaire POSTera vers la même URL (route /register après normalisation du router) -->
 <form method="post" action="">
+  <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf ?? '', ENT_QUOTES, 'UTF-8') ?>">
   <div>
     <label for="login">Nom d'utilisateur</label><br>
     <input id="login" name="login" type="text" value="<?= $old['login'] ?? '' ?>" required>
@@ -38,9 +42,9 @@
     <input id="password_confirm" name="password_confirm" type="password" required>
   </div>
   <div style="margin-top:8px;">
-    <button type="submit">S'inscrire</button>
+    <button type="submit">Je m'inscris</button>
   </div>
 </form>
 
 <!-- lien relatif : navigue depuis le dossier courant vers login -->
-<p><a href="login">Déjà un compte ? Connexion</a></p>
+<p>Déjà un compte ? <a href="login">Connexion</a></p>

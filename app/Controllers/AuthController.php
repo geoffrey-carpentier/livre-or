@@ -8,12 +8,24 @@ use App\Models\UserModel;
  * AuthController
  * --------------
  * Gère l'inscription, la connexion et la déconnexion.
- *
- * Remarque : les méthodes gèrent à la fois GET (affichage du formulaire)
- * et POST (traitement du formulaire) — le routeur doit déclarer des routes POST.
  */
 class AuthController extends BaseController
 {
+    // --- Ajout : helper de log pour les événements de sécurité ---
+    private function logCsrfFailure(string $route, ?string $login = null): void
+    {
+        $logDir = __DIR__ . '/../../logs';
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0755, true);
+        }
+        $file = $logDir . '/security.log';
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $time = date('Y-m-d H:i:s');
+        $loginPart = $login ? " login={$login}" : '';
+        $msg = "[$time] CSRF_FAILURE route={$route}{$loginPart} ip={$ip}\n";
+        @file_put_contents($file, $msg, FILE_APPEND | LOCK_EX);
+    }
+
     /**
      * Inscription : affiche le formulaire (GET) ou traite l'inscription (POST)
      */
@@ -21,6 +33,20 @@ class AuthController extends BaseController
     {
         // Si POST : traiter le formulaire
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Vérifie CSRF
+            $token = $_POST['csrf_token'] ?? null;
+            if (!$this->verifyCsrfToken($token)) {
+                // Journalise et affiche erreur conviviale
+                $this->logCsrfFailure('register', $_POST['login'] ?? null);
+                $csrf = $this->generateCsrfToken();
+                $this->render('auth/register', [
+                    'errors' => ['Requête invalide (token de sécurité manquant ou expiré). Veuillez réessayer.'],
+                    'old' => ['login' => htmlspecialchars($_POST['login'] ?? '', ENT_QUOTES, 'UTF-8')],
+                    'csrf' => $csrf
+                ]);
+                return;
+            }
+
             $login = trim($_POST['login'] ?? '');
             $password = $_POST['password'] ?? '';
             $password_confirm = $_POST['password_confirm'] ?? '';
@@ -50,23 +76,27 @@ class AuthController extends BaseController
                 if ($ok) {
                     // message flash simple via session
                     $_SESSION['flash'] = 'Inscription réussie. Vous pouvez vous connecter.';
-                    header('Location: /login');
+                    $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+                    header('Location: ' . $base . '/login');
                     exit;
                 } else {
                     $errors[] = 'Erreur lors de la création du compte (réessayer).';
                 }
             }
 
-            // Affiche le formulaire avec les erreurs
+            // Affiche le formulaire avec les erreurs et les anciennes valeurs
+            $csrf = $this->generateCsrfToken();
             $this->render('auth/register', [
                 'errors' => $errors,
-                'old' => ['login' => htmlspecialchars($login, ENT_QUOTES, 'UTF-8')]
+                'old' => ['login' => htmlspecialchars($login, ENT_QUOTES, 'UTF-8')],
+                'csrf' => $csrf
             ]);
             return;
         }
 
-        // GET : afficher le formulaire
-        $this->render('auth/register');
+        // GET : afficher le formulaire avec token CSRF
+        $csrf = $this->generateCsrfToken();
+        $this->render('auth/register', ['csrf' => $csrf]);
     }
 
     /**
@@ -75,6 +105,19 @@ class AuthController extends BaseController
     public function login(): void
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Vérifie CSRF
+            $token = $_POST['csrf_token'] ?? null;
+            if (!$this->verifyCsrfToken($token)) {
+                $this->logCsrfFailure('login', $_POST['login'] ?? null);
+                $csrf = $this->generateCsrfToken();
+                $this->render('auth/login', [
+                    'errors' => ['Requête invalide (token de sécurité manquant ou expiré). Veuillez réessayer.'],
+                    'old' => ['login' => htmlspecialchars($_POST['login'] ?? '', ENT_QUOTES, 'UTF-8')],
+                    'csrf' => $csrf
+                ]);
+                return;
+            }
+
             $login = trim($_POST['login'] ?? '');
             $password = $_POST['password'] ?? '';
             $errors = [];
@@ -94,22 +137,25 @@ class AuthController extends BaseController
 
                     // Optionnel : message flash
                     $_SESSION['flash'] = 'Connexion réussie.';
-
-                    header('Location: /comments');
+                    $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+                    header('Location: ' . $base . '/comments');
                     exit;
                 }
             }
 
-            // Affiche le formulaire avec erreurs
+            // Affiche le formulaire avec erreurs et anciennes valeurs
+            $csrf = $this->generateCsrfToken();
             $this->render('auth/login', [
                 'errors' => $errors,
-                'old' => ['login' => htmlspecialchars($login, ENT_QUOTES, 'UTF-8')]
+                'old' => ['login' => htmlspecialchars($login, ENT_QUOTES, 'UTF-8')],
+                'csrf' => $csrf
             ]);
             return;
         }
 
-        // GET : afficher le formulaire
-        $this->render('auth/login');
+        // GET : afficher le formulaire avec token CSRF
+        $csrf = $this->generateCsrfToken();
+        $this->render('auth/login', ['csrf' => $csrf]);
     }
 
     /**

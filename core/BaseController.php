@@ -2,10 +2,7 @@
 namespace Core;
 
 /**
- * Classe BaseController
- * ---------------------
- * Classe mère dont hériteront tous les contrôleurs.
- * Elle centralise le rendu des vues dans un layout.
+ * Classe de base dont héritent les contrôleurs.
  */
 class BaseController
 {
@@ -45,5 +42,60 @@ class BaseController
             // Si pas de layout, affiche directement le contenu
             echo $content;
         }
+    }
+
+    // --- Ajout CSRF helpers ---
+
+    /**
+     * Génère (ou récupère) un token CSRF stocké en session.
+     * Le token est régénéré toutes les 30 minutes.
+     *
+     * @return string
+     */
+    protected function generateCsrfToken(): string
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            @session_start();
+        }
+
+        $maxAge = 1800; // 30 minutes
+        if (empty($_SESSION['csrf_token']) || empty($_SESSION['csrf_token_time']) || (time() - $_SESSION['csrf_token_time']) > $maxAge) {
+            try {
+                $token = bin2hex(random_bytes(32));
+            } catch (\Exception $e) {
+                // Fallback si random_bytes indisponible
+                $token = bin2hex(openssl_random_pseudo_bytes(32));
+            }
+            $_SESSION['csrf_token'] = $token;
+            $_SESSION['csrf_token_time'] = time();
+        } else {
+            $token = $_SESSION['csrf_token'];
+        }
+
+        return $token;
+    }
+
+    /**
+     * Vérifie et invalide le token CSRF fourni.
+     *
+     * @param string|null $token
+     * @return bool
+     */
+    protected function verifyCsrfToken(?string $token): bool
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            @session_start();
+        }
+
+        if (empty($token) || empty($_SESSION['csrf_token'])) {
+            return false;
+        }
+
+        $valid = hash_equals((string)$_SESSION['csrf_token'], (string)$token);
+
+        // Invalide le token après vérification pour éviter la réutilisation
+        unset($_SESSION['csrf_token'], $_SESSION['csrf_token_time']);
+
+        return $valid;
     }
 }

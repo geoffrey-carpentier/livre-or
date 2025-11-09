@@ -65,13 +65,18 @@ class CommentController extends BaseController
             exit;
         }
 
-        // Affiche la vue du formulaire d'ajout
-        $this->render('comment/new', ['title' => "Ajouter un commentaire"]);
+        // Génère un token CSRF et le passe à la vue
+        $csrf = $this->generateCsrfToken();
+
+        $this->render('comment/new', [
+            'title' => "Ajouter un commentaire",
+            'csrf' => $csrf
+        ]);
     }
 
     /**
      * Création d'un commentaire (POST).
-     * Accessible uniquement aux utilisateurs connectés.
+     * Vérifie le CSRF et la validation serveur (longueur min/max).
      */
     public function create(): void
     {
@@ -88,16 +93,35 @@ class CommentController extends BaseController
             exit;
         }
 
-        $text = trim($_POST['commentaire'] ?? '');
-        if ($text === '') {
-            $_SESSION['flash'] = 'Le commentaire ne peut pas être vide.';
+        // Vérification CSRF
+        $token = $_POST['csrf_token'] ?? null;
+        if (!$this->verifyCsrfToken($token)) {
+            $_SESSION['flash'] = 'Requête invalide (token de sécurité manquant ou expiré).';
             $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
-            header('Location: ' . $base . '/comments');
+            header('Location: ' . $base . '/comments/new');
             exit;
         }
 
+        // Validation du contenu
+        $text = trim((string)($_POST['commentaire'] ?? ''));
+        $minLen = 5;
+        $maxLen = 1000;
+        $len = mb_strlen($text);
+        if ($len < $minLen) {
+            $_SESSION['flash'] = "Le commentaire est trop court (minimum {$minLen} caractères).";
+            header('Location: ' . (defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '') . '/comments/new');
+            exit;
+        }
+        if ($len > $maxLen) {
+            $_SESSION['flash'] = "Le commentaire est trop long (maximum {$maxLen} caractères).";
+            header('Location: ' . (defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '') . '/comments/new');
+            exit;
+        }
+
+        // Enregistrement (le modèle s'occupe des exceptions)
         $model = new CommentModel();
         $ok = $model->create((int)$_SESSION['user_id'], $text);
+
         $_SESSION['flash'] = $ok ? 'Commentaire publié.' : 'Erreur lors de la publication.';
         $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
         header('Location: ' . $base . '/comments');

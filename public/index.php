@@ -31,6 +31,7 @@ $router->get('/comments/show', 'App\\Controllers\\CommentController@show');
 $router->get('/register', 'App\\Controllers\\AuthController@register');
 $router->get('/login', 'App\\Controllers\\AuthController@login');
 $router->get('/logout', 'App\\Controllers\\AuthController@logout');
+$router->get('/comments/new', 'App\\Controllers\\CommentController@new');
 
 // Routes POST (forms)
 $router->post('/register', 'App\\Controllers\\AuthController@register');

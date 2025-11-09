@@ -46,6 +46,30 @@ class CommentController extends BaseController
     }
 
     /**
+     * Affiche le formulaire d'ajout de commentaire.
+     * Accessible uniquement aux utilisateurs connectés.
+     */
+    public function new(): void
+    {
+        // Vérifie la méthode (GET) et la connexion
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            http_response_code(405);
+            echo 'Méthode non autorisée';
+            return;
+        }
+
+        if (empty($_SESSION['user_id'])) {
+            // Non connecté -> redirection vers la page de connexion
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            header('Location: ' . $base . '/login');
+            exit;
+        }
+
+        // Affiche la vue du formulaire d'ajout
+        $this->render('comment/new', ['title' => "Ajouter un commentaire"]);
+    }
+
+    /**
      * Création d'un commentaire (POST).
      * Accessible uniquement aux utilisateurs connectés.
      */
@@ -59,21 +83,24 @@ class CommentController extends BaseController
 
         if (empty($_SESSION['user_id'])) {
             // Non connecté -> redirection vers login
-            header('Location: /login');
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            header('Location: ' . $base . '/login');
             exit;
         }
 
         $text = trim($_POST['commentaire'] ?? '');
         if ($text === '') {
             $_SESSION['flash'] = 'Le commentaire ne peut pas être vide.';
-            header('Location: /comments');
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            header('Location: ' . $base . '/comments');
             exit;
         }
 
         $model = new CommentModel();
         $ok = $model->create((int)$_SESSION['user_id'], $text);
         $_SESSION['flash'] = $ok ? 'Commentaire publié.' : 'Erreur lors de la publication.';
-        header('Location: /comments');
+        $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+        header('Location: ' . $base . '/comments');
         exit;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Core\Database;
@@ -16,12 +17,12 @@ use PDOException;
  */
 class UserModel
 {
-    public function create(string $login, string $hash): bool
+    public function create(string $login, string $hash, ?string $avatar = null): bool
     {
         try {
             $pdo = Database::getPdo();
-            $stmt = $pdo->prepare('INSERT INTO utilisateurs (login, password) VALUES (:login, :password)');
-            return $stmt->execute([':login' => $login, ':password' => $hash]);
+            $stmt = $pdo->prepare('INSERT INTO utilisateurs (login, password, avatar) VALUES (:login, :password, :avatar)');
+            return $stmt->execute([':login' => $login, ':password' => $hash, ':avatar' => $avatar]);
         } catch (PDOException $e) {
             return false;
         }
@@ -31,7 +32,7 @@ class UserModel
     {
         try {
             $pdo = Database::getPdo();
-            $stmt = $pdo->prepare('SELECT id, login, password FROM utilisateurs WHERE login = :login LIMIT 1');
+            $stmt = $pdo->prepare('SELECT id, login, password, avatar FROM utilisateurs WHERE login = :login LIMIT 1');
             $stmt->execute([':login' => $login]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row === false ? null : $row;
@@ -44,7 +45,7 @@ class UserModel
     {
         try {
             $pdo = Database::getPdo();
-            $stmt = $pdo->prepare('SELECT id, login, password FROM utilisateurs WHERE id = :id LIMIT 1');
+            $stmt = $pdo->prepare('SELECT id, login, password, avatar FROM utilisateurs WHERE id = :id LIMIT 1');
             $stmt->execute([':id' => $id]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row === false ? null : $row;

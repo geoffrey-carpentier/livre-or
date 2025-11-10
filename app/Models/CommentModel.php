@@ -20,7 +20,7 @@ class CommentModel
             $pdo = Database::getPdo();
 
             // Sélectionne l'identifiant, le texte, la date et le login de l'auteur
-            $sql = 'SELECT c.id, c.commentaire AS body, c.date, u.login
+            $sql = 'SELECT c.id, c.commentaire AS body, c.date, u.login, u.avatar
                     FROM commentaires c
                     LEFT JOIN utilisateurs u ON c.id_utilisateur = u.id
                     ORDER BY c.date DESC';
@@ -43,7 +43,7 @@ class CommentModel
     {
         try {
             $pdo = Database::getPdo();
-            $stmt = $pdo->prepare('SELECT c.id, c.commentaire AS body, c.date, u.login
+            $stmt = $pdo->prepare('SELECT c.id, c.commentaire AS body, c.date, u.login, u.avatar
                                    FROM commentaires c
                                    LEFT JOIN utilisateurs u ON c.id_utilisateur = u.id
                                    WHERE c.id = :id LIMIT 1');
@@ -59,8 +59,8 @@ class CommentModel
     {
         try {
             $pdo = Database::getPdo();
-            $stmt = $pdo->prepare('INSERT INTO commentaires (commentaire, id_utilisateur, date) VALUES (:text, :uid, NOW())');
-            return $stmt->execute([':text' => $text, ':uid' => $userId]);
+            $stmt = $pdo->prepare('INSERT INTO commentaires (commentaire, id_utilisateur, date) VALUES (:text, :uid, :dt)');
+            return $stmt->execute([':text' => $text, ':uid' => $userId, ':dt' => date('Y-m-d H:i:s')]);
         } catch (PDOException $e) {
             return false;
         }

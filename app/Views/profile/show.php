@@ -1,19 +1,22 @@
 <?php
-
 /**
  * Vue : profil utilisateur
- * Variables attendues : $user (id, login), $csrf, $old
+ * Variables attendues : $user (id, login, avatar), $csrf, $old
  */
 ?>
 <h1>Mon profil</h1>
 
 <?php if (!empty($_SESSION['flash'])): ?>
-    <div style="background:#e6ffed;padding:8px;border:1px solid #b6f0c6;margin-bottom:12px;"><?= htmlspecialchars($_SESSION['flash'], ENT_QUOTES, 'UTF-8') ?></div>
-    <?php unset($_SESSION['flash']); ?>
+  <div class="flash"><?= htmlspecialchars($_SESSION['flash'], ENT_QUOTES, 'UTF-8') ?></div>
+  <?php unset($_SESSION['flash']); ?>
 <?php endif; ?>
 
-<div>
-    <strong>Login :</strong> <?= htmlspecialchars($user['login'] ?? '', ENT_QUOTES, 'UTF-8') ?>
+<div class="card" style="display:flex;gap:16px;align-items:center;">
+  <img alt="avatar" src="<?= htmlspecialchars($user['avatar'] ?? ('https://avatars.dicebear.com/api/identicon/' . urlencode($user['login'] ?? 'anon') . '.svg'), ENT_QUOTES, 'UTF-8') ?>" width="96" height="96" style="border-radius:12px;">
+  <div>
+    <div><strong>Login :</strong> <?= htmlspecialchars($user['login'] ?? '', ENT_QUOTES, 'UTF-8') ?></div>
+    <p style="margin-top:6px;color:#666;">(Pour changer d'avatar, tu peux remplacer l'URL dans la base de données ou implémenter un upload.)</p>
+  </div>
 </div>
 
 <hr>

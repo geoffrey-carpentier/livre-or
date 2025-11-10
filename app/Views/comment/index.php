@@ -1,7 +1,7 @@
 <?php
 /**
  * Vue : Liste des commentaires (livre d'or)
- * Variable attendue : $articles (tableau) - chaque élément : id, body, date, login
+ * Variable attendue : $articles (tableau) - chaque élément : id, body, date, login, avatar
  */
 ?>
 <h1><?= htmlspecialchars($title ?? "Livre d'or", ENT_QUOTES, 'UTF-8') ?></h1>
@@ -9,16 +9,21 @@
 <?php if (!empty($articles)): ?>
   <ul style="list-style:none;padding:0;">
     <?php foreach ($articles as $c): ?>
-      <li style="border-bottom:1px solid #eee;padding:12px 0;">
-        <div style="font-size:0.9rem;color:#666;">
-          Posté le <?= date('d/m/Y', strtotime($c['date'] ?? 'now')) ?>
-          par <?= htmlspecialchars($c['login'] ?? 'Anonyme', ENT_QUOTES, 'UTF-8') ?>
+      <li class="card" style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="flex:0 0 56px;">
+          <img alt="avatar" src="<?= htmlspecialchars($c['avatar'] ?? ('https://avatars.dicebear.com/api/identicon/' . urlencode($c['login'] ?? 'anon') . '.svg'), ENT_QUOTES, 'UTF-8') ?>" width="56" height="56" style="border-radius:8px;">
         </div>
-        <div style="margin-top:6px;">
-          <?= nl2br(htmlspecialchars($c['body'] ?? '', ENT_QUOTES, 'UTF-8')) ?>
-        </div>
-        <div style="margin-top:6px;">
-          <a href="comments/show?id=<?= (int)$c['id'] ?>">Voir</a>
+        <div style="flex:1;">
+          <div style="font-size:0.9rem;color:#666;">
+            Posté le <?= date('d/m/Y H:i', strtotime($c['date'] ?? 'now')) ?>
+            par <?= htmlspecialchars($c['login'] ?? 'Anonyme', ENT_QUOTES, 'UTF-8') ?>
+          </div>
+          <div style="margin-top:6px; white-space:pre-wrap;">
+            <?= nl2br(htmlspecialchars($c['body'] ?? '', ENT_QUOTES, 'UTF-8')) ?>
+          </div>
+          <div style="margin-top:8px;">
+            <a href="comments/show?id=<?= (int)$c['id'] ?>">Voir</a>
+          </div>
         </div>
       </li>
     <?php endforeach; ?>

@@ -166,7 +166,8 @@ class AuthController extends BaseController
         // Retire les données de session liés à l'utilisateur
         unset($_SESSION['user_id'], $_SESSION['login']);
         $_SESSION['flash'] = 'Déconnecté.';
-        header('Location: /');
+        $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+        header('Location: ' . $base . '/');
         exit;
     }
 }

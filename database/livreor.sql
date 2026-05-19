@@ -43,7 +43,9 @@ CREATE TABLE `commentaires` (
 CREATE TABLE `utilisateurs` (
   `id` int NOT NULL,
   `login` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `avatar` varchar(1024) COLLATE utf8mb4_general_ci NULL,
+  `role` varchar(50) COLLATE utf8mb4_general_ci DEFAULT 'user'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

@@ -136,7 +136,8 @@ class CommentController extends BaseController
     public function edit(): void
     {
         if (empty($_SESSION['user_id'])) {
-            header('Location: /login'); exit;
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            header('Location: ' . $base . '/login'); exit;
         }
         $id = (int)($_GET['id'] ?? 0);
         if ($id <= 0) { http_response_code(404); echo 'Non trouvé'; return; }
@@ -166,35 +167,49 @@ class CommentController extends BaseController
     public function update(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); return; }
-        if (empty($_SESSION['user_id'])) { header('Location: /login'); exit; }
+        if (empty($_SESSION['user_id'])) { 
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            header('Location: ' . $base . '/login'); exit; 
+        }
 
         $token = $_POST['csrf_token'] ?? null;
         if (!$this->verifyCsrfToken($token)) {
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
             $_SESSION['flash'] = 'Requête invalide (token).';
-            header('Location: /comments'); exit;
+            header('Location: ' . $base . '/comments'); exit;
         }
 
         $id = (int)($_POST['id'] ?? 0);
         $text = trim((string)($_POST['commentaire'] ?? ''));
         if ($id <= 0 || $text === '') {
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
             $_SESSION['flash'] = 'Données invalides.';
-            header('Location: /comments'); exit;
+            header('Location: ' . $base . '/comments'); exit;
         }
 
         $model = new CommentModel();
         $c = $model->find($id);
-        if (!$c) { $_SESSION['flash'] = 'Commentaire introuvable.'; header('Location: /comments'); exit; }
+        if (!$c) { 
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            $_SESSION['flash'] = 'Commentaire introuvable.'; 
+            header('Location: ' . $base . '/comments'); exit; 
+        }
 
         $userModel = new UserModel();
         $user = $userModel->findById((int)$_SESSION['user_id']);
         $isOwner = (!empty($user) && $user['login'] === $c['login']);
         $isAdmin = (!empty($user) && ($user['role'] ?? '') === 'admin');
 
-        if (!$isOwner && !$isAdmin) { $_SESSION['flash'] = 'Accès refusé.'; header('Location: /comments'); exit; }
+        if (!$isOwner && !$isAdmin) { 
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            $_SESSION['flash'] = 'Accès refusé.'; 
+            header('Location: ' . $base . '/comments'); exit; 
+        }
 
         $ok = $model->update($id, $text);
+        $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
         $_SESSION['flash'] = $ok ? 'Commentaire mis à jour.' : 'Erreur lors de la mise à jour.';
-        header('Location: /comments'); exit;
+        header('Location: ' . $base . '/comments'); exit;
     }
 
     /**
@@ -204,30 +219,47 @@ class CommentController extends BaseController
     public function remove(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); return; }
-        if (empty($_SESSION['user_id'])) { header('Location: /login'); exit; }
+        if (empty($_SESSION['user_id'])) { 
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            header('Location: ' . $base . '/login'); exit; 
+        }
 
         $token = $_POST['csrf_token'] ?? null;
         if (!$this->verifyCsrfToken($token)) {
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
             $_SESSION['flash'] = 'Requête invalide (token).';
-            header('Location: /comments'); exit;
+            header('Location: ' . $base . '/comments'); exit;
         }
 
         $id = (int)($_POST['id'] ?? 0);
-        if ($id <= 0) { $_SESSION['flash'] = 'ID invalide.'; header('Location: /comments'); exit; }
+        if ($id <= 0) { 
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            $_SESSION['flash'] = 'ID invalide.'; 
+            header('Location: ' . $base . '/comments'); exit; 
+        }
 
         $model = new CommentModel();
         $c = $model->find($id);
-        if (!$c) { $_SESSION['flash'] = 'Commentaire introuvable.'; header('Location: /comments'); exit; }
+        if (!$c) { 
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            $_SESSION['flash'] = 'Commentaire introuvable.'; 
+            header('Location: ' . $base . '/comments'); exit; 
+        }
 
         $userModel = new UserModel();
         $user = $userModel->findById((int)$_SESSION['user_id']);
         $isOwner = (!empty($user) && $user['login'] === $c['login']);
         $isAdmin = (!empty($user) && ($user['role'] ?? '') === 'admin');
 
-        if (!$isOwner && !$isAdmin) { $_SESSION['flash'] = 'Accès refusé.'; header('Location: /comments'); exit; }
+        if (!$isOwner && !$isAdmin) { 
+            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+            $_SESSION['flash'] = 'Accès refusé.'; 
+            header('Location: ' . $base . '/comments'); exit; 
+        }
 
         $ok = $model->delete($id);
+        $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
         $_SESSION['flash'] = $ok ? 'Commentaire supprimé.' : 'Erreur lors de la suppression.';
-        header('Location: /comments'); exit;
+        header('Location: ' . $base . '/comments'); exit;
     }
 }

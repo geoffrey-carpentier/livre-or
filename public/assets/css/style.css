@@ -1,210 +1,501 @@
+/* ============================================================
+   Livre d'or — feuille de style "livre physique"
+   Palette papier ancien / reliure cuir, sans framework CSS/JS.
+   ============================================================ */
+
 :root {
-  --bg: #0b1020;
-  --card: #0f1724;
-  --muted: #94a3b8;
-  --accent: #60a5fa;
-  --accent-2: #7c3aed;
-  --glass: rgba(255, 255, 255, 0.03);
-  --gold: #ffd54a;
+  --leather: #4a2f23;
+  --leather-dark: #331f17;
+  --leather-light: #6b4530;
+  --gold: #c9a24b;
+  --gold-light: #e6c878;
+  --paper: #f4ecd8;
+  --paper-dark: #e9dfc4;
+  --paper-line: #d8c9a3;
+  --ink: #3a2e22;
+  --ink-soft: #6b5b47;
+  --ink-red: #8c3a2b;
+  --shadow: rgba(43, 26, 13, 0.35);
 }
 
-/* Global */
 * {
   box-sizing: border-box;
 }
+
 html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  background: radial-gradient(
-      900px 400px at 10% 10%,
-      rgba(96, 165, 250, 0.04),
-      transparent
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--ink);
+  line-height: 1.6;
+  background: var(--leather-dark);
+  background-image: radial-gradient(
+      ellipse at top left,
+      rgba(255, 255, 255, 0.05),
+      transparent 60%
     ),
-    radial-gradient(
-      700px 300px at 90% 90%,
-      rgba(124, 58, 237, 0.035),
-      transparent
-    ),
-    var(--bg);
-  color: #e6eef8;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
+    radial-gradient(ellipse at bottom right, rgba(0, 0, 0, 0.35), transparent 60%);
 }
 
-/* Layout spacing */
-main {
-  animation: floatBG 14s ease-in-out infinite;
-  max-width: 1100px;
-  margin: 28px auto;
-  padding: 28px;
-}
-.card {
-  background: var(--card);
-  padding: 18px;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
-  margin-bottom: 16px;
+h1,
+h2,
+h3 {
+  font-family: "Caveat", Georgia, serif;
+  color: var(--leather);
+  font-weight: 700;
+  margin-top: 0;
 }
 
-/* Header / nav centered */
+h1 {
+  font-size: 2.6rem;
+  border-bottom: 2px solid var(--paper-line);
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+}
+
+h2 {
+  font-size: 1.7rem;
+}
+
+a {
+  color: var(--ink-red);
+}
+
+/* ============================================================
+   En-tête : reliure en cuir du livre
+   ============================================================ */
 header {
-  backdrop-filter: blur(6px);
-  background: linear-gradient(
-    180deg,
-    rgba(7, 10, 20, 0.6),
-    rgba(7, 10, 20, 0.4)
-  );
+  background: linear-gradient(180deg, var(--leather), var(--leather-dark));
+  box-shadow: 0 4px 14px var(--shadow);
+  border-bottom: 3px solid var(--gold);
 }
+
 nav {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 18px;
-  padding: 14px 18px;
-  max-width: 1100px;
+  gap: 6px 4px;
+  max-width: 1000px;
   margin: 0 auto;
-}
-nav a {
-  transition: transform 0.18s ease, color 0.18s ease;
-  color: rgba(255, 255, 255, 0.95);
-  padding: 6px 8px;
-  border-radius: 8px;
-}
-nav a:hover {
-  transform: translateY(-3px);
-  color: var(--accent);
+  padding: 14px 18px;
 }
 
-/* Hero */
+nav a {
+  font-family: "Caveat", Georgia, serif;
+  font-size: 1.25rem;
+  color: var(--gold-light);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+nav a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+nav a.active {
+  color: var(--leather-dark);
+  background: var(--gold);
+  font-weight: 700;
+}
+
+/* ============================================================
+   Contenu principal : la "page" du livre
+   ============================================================ */
+main {
+  max-width: 900px;
+  margin: 36px auto;
+  padding: 0 18px;
+}
+
+.page {
+  position: relative;
+  background: var(--paper);
+  background-image: repeating-linear-gradient(
+    rgba(139, 69, 19, 0.05) 0px,
+    rgba(139, 69, 19, 0.05) 1px,
+    transparent 1px,
+    transparent 33px
+  );
+  padding: 36px 36px 36px 56px;
+  border-radius: 3px;
+  box-shadow: 0 10px 30px var(--shadow), 0 1px 0 #fff inset;
+}
+
+/* Marge rouge façon cahier d'écolier */
+.page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 34px;
+  width: 1px;
+  background: rgba(140, 58, 43, 0.35);
+}
+
+/* Coin de page cornée, en pur CSS */
+.page::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, transparent 50%, var(--paper-dark) 50%);
+  box-shadow: -2px -2px 6px var(--shadow);
+  border-bottom-right-radius: 3px;
+}
+
+/* ============================================================
+   Cartes génériques (formulaires, profil...)
+   ============================================================ */
+.card {
+  background: var(--paper-dark);
+  border: 1px solid var(--paper-line);
+  padding: 20px 24px;
+  border-radius: 6px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 6px rgba(43, 26, 13, 0.12);
+}
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--paper-line);
+  margin: 20px 0;
+}
+
+/* ============================================================
+   Message d'accueil (hero)
+   ============================================================ */
 .hero {
-  min-height: 64vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 18px;
+  padding: 10px 0 30px;
 }
+
 .hero-inner {
   width: 100%;
-  max-width: 980px;
   text-align: center;
-  padding: 40px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.02),
-    rgba(255, 255, 255, 0.01)
-  );
-  border-radius: 16px;
-  box-shadow: 0 12px 36px rgba(2, 6, 23, 0.6);
 }
+
 .hero h1 {
-  font-size: clamp(2rem, 5vw, 4rem);
-  margin: 0 0 14px;
-  font-weight: 900;
-  color: var(--gold);
-  text-shadow: 0 6px 30px rgba(255, 213, 74, 0.06);
-}
-.hero p {
-  color: var(--muted);
-  margin: 0 0 20px;
-  font-size: 1.05rem;
+  border: none;
+  font-size: clamp(2.4rem, 6vw, 4rem);
 }
 
-/* Buttons */
-.btn {
-  display: inline-block;
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.4);
-}
-.btn-primary {
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  color: #fff;
-}
-.btn-ghost {
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.92);
-  background: transparent;
+.hero h2 {
+  color: var(--ink-soft);
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: normal;
+  font-style: italic;
+  margin-bottom: 18px;
 }
 
-/* Inputs: visible focus + larger click area */
-input,
-textarea,
-select {
-  background: #071029;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: #e6eef8;
-  padding: 12px;
-  border-radius: 10px;
-  width: 100%;
-  transition: box-shadow 0.12s ease, border-color 0.12s ease,
-    transform 0.08s ease;
-  outline: none;
-}
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 6px 20px rgba(96, 165, 250, 0.12);
-  transform: translateY(-2px);
+.hero > p {
+  color: var(--ink-soft);
+  max-width: 60ch;
+  margin: 0 auto 22px;
 }
 
-/* Form labels spacing */
-label {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--muted);
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+
+.hero-note {
+  margin-top: 22px;
+  color: var(--ink-soft);
+  font-style: italic;
   font-size: 0.95rem;
 }
 
-/* Flash */
+/* ============================================================
+   Boutons façon ruban / cachet
+   ============================================================ */
+.btn {
+  display: inline-block;
+  font-family: "Caveat", Georgia, serif;
+  font-size: 1.2rem;
+  padding: 9px 22px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--shadow);
+}
+
+.btn-primary,
+button,
+input[type="submit"] {
+  background: var(--ink-red);
+  color: var(--paper);
+  border-color: var(--ink-red);
+  font-family: "Caveat", Georgia, serif;
+  font-size: 1.15rem;
+  padding: 9px 22px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.btn-primary:hover,
+button:hover,
+input[type="submit"]:hover {
+  background: #742f22;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--leather);
+  border-color: var(--leather);
+}
+
+.btn-danger {
+  background: transparent;
+  border-color: var(--ink-red);
+  color: var(--ink-red);
+}
+
+/* ============================================================
+   Formulaires : lignes d'écriture plutôt que boîtes modernes
+   ============================================================ */
+label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+input,
+textarea,
+select {
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--paper-line);
+  padding: 8px 4px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-bottom: 2px solid var(--ink-red);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+form > div {
+  margin-bottom: 14px;
+}
+
+/* ============================================================
+   Messages flash et erreurs
+   ============================================================ */
 .flash {
-  background: #052e15;
-  color: #cdebd4;
-  padding: 12px;
-  border-radius: 10px;
+  background: #e9f2e3;
+  border: 1px solid #b9d6a8;
+  color: #3a4a2f;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.errors {
+  background: #f7e6d8;
+  border: 1px solid #dba97a;
+  color: var(--ink-red);
+  padding: 10px 14px;
+  border-radius: 6px;
   margin-bottom: 16px;
 }
 
-/* List preview small cards */
+.errors ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* ============================================================
+   Livre d'or : liste des commentaires (billets manuscrits)
+   ============================================================ */
+.entries {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.entry {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--paper-dark);
+  border: 1px solid var(--paper-line);
+  border-radius: 4px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 5px rgba(43, 26, 13, 0.1);
+}
+
+.entry:nth-child(odd) {
+  transform: rotate(-0.4deg);
+}
+
+.entry:nth-child(even) {
+  transform: rotate(0.4deg);
+}
+
+.entry-avatar img,
+.avatar-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--paper-line);
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.entry-meta {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin-bottom: 6px;
+}
+
+.entry-body {
+  font-family: "Caveat", Georgia, serif;
+  font-size: 1.3rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  color: var(--ink);
+}
+
+.entry-actions {
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+/* Aperçu des derniers messages sur la page d'accueil */
 .preview-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
-  margin-top: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+  text-align: left;
 }
+
 .preview-item {
-  background: rgba(255, 255, 255, 0.02);
-  padding: 12px;
-  border-radius: 10px;
+  background: var(--paper-dark);
+  border: 1px solid var(--paper-line);
+  border-radius: 4px;
+  padding: 14px;
 }
 
-/* Footer spacing for overall harmony */
+.preview-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.preview-item-header strong {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 0.95rem;
+}
+
+.preview-item-header span {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.preview-item p {
+  font-family: "Caveat", Georgia, serif;
+  font-size: 1.15rem;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ============================================================
+   Profil
+   ============================================================ */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.profile-header .login {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: var(--leather);
+}
+
+.text-muted {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   Pied de page
+   ============================================================ */
 footer {
-  max-width: 1100px;
-  margin: 28px auto;
+  max-width: 900px;
+  margin: 10px auto 30px;
   padding: 12px 20px;
-  color: var(--muted);
+  color: var(--gold-light);
   text-align: center;
+  font-family: "Caveat", Georgia, serif;
+  font-size: 1.1rem;
 }
 
-/* Responsive */
+footer a {
+  color: var(--gold-light);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
 @media (max-width: 640px) {
-  .hero-inner {
-    padding: 22px;
+  .page {
+    padding: 24px 18px 24px 34px;
   }
-  nav {
-    gap: 10px;
-    padding: 12px;
+
+  .page::before {
+    left: 16px;
   }
+
   main {
-    padding: 18px;
+    margin: 18px auto;
+  }
+
+  .entry {
+    flex-direction: column;
+    transform: none !important;
   }
 }

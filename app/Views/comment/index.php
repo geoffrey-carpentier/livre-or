@@ -12,27 +12,26 @@
   <?php unset($_SESSION['flash']); ?>
 <?php endif; ?>
 
-<?php if (!empty($_SESSION['user_id'])): // Si l'utilisateur est connecté 
-?>
-  <p><a href="comments/new" class="button">Ajouter un commentaire</a></p>
+<?php if (!empty($_SESSION['user_id'])): ?>
+  <p><a class="btn btn-primary" href="comments/new">Ajouter un commentaire</a></p>
 <?php endif; ?>
 
 <?php if (!empty($articles)): ?>
-  <ul style="list-style:none;padding:0;">
+  <ul class="entries">
     <?php foreach ($articles as $c): ?>
-      <li class="card" style="display:flex;gap:12px;align-items:flex-start;">
-        <div style="flex:0 0 56px;">
-          <img alt="avatar" src="<?= htmlspecialchars($c['avatar'] ?? ('https://avatars.dicebear.com/api/identicon/' . urlencode($c['login'] ?? 'anon') . '.svg'), ENT_QUOTES, 'UTF-8') ?>" width="56" height="56" style="border-radius:8px;">
+      <li class="entry">
+        <div class="entry-avatar">
+          <img alt="avatar" src="<?= htmlspecialchars($c['avatar'] ?? ('https://avatars.dicebear.com/api/identicon/' . urlencode($c['login'] ?? 'anon') . '.svg'), ENT_QUOTES, 'UTF-8') ?>">
         </div>
-        <div style="flex:1;">
-          <div style="font-size:0.9rem;color:#666;">
+        <div>
+          <div class="entry-meta">
             Posté le <?= date('d/m/Y H:i', strtotime($c['date'] ?? 'now')) ?>
             par <?= htmlspecialchars($c['login'] ?? 'Anonyme', ENT_QUOTES, 'UTF-8') ?>
           </div>
-          <div style="margin-top:6px; white-space:pre-wrap;">
+          <div class="entry-body">
             <?= nl2br(htmlspecialchars($c['body'] ?? '', ENT_QUOTES, 'UTF-8')) ?>
           </div>
-          <div style="margin-top:8px;">
+          <div class="entry-actions">
             <a href="comments/show?id=<?= (int)$c['id'] ?>">Voir</a>
           </div>
         </div>

@@ -1,10 +1,21 @@
 <?php
+
 /**
  * Vue : Liste des commentaires (livre d'or)
  * Variable attendue : $articles (tableau) - chaque élément : id, body, date, login, avatar
  */
 ?>
 <h1><?= htmlspecialchars($title ?? "Livre d'or", ENT_QUOTES, 'UTF-8') ?></h1>
+
+<?php if (!empty($_SESSION['flash'])): ?>
+  <div class="flash"><?= htmlspecialchars($_SESSION['flash'], ENT_QUOTES, 'UTF-8') ?></div>
+  <?php unset($_SESSION['flash']); ?>
+<?php endif; ?>
+
+<?php if (!empty($_SESSION['user_id'])): // Si l'utilisateur est connecté 
+?>
+  <p><a href="comments/new" class="button">Ajouter un commentaire</a></p>
+<?php endif; ?>
 
 <?php if (!empty($articles)): ?>
   <ul style="list-style:none;padding:0;">
@@ -31,5 +42,3 @@
 <?php else: ?>
   <p>Aucun commentaire pour le moment.</p>
 <?php endif; ?>
-
-<p><a href="comments">← Retour au livre d'or</a></p>

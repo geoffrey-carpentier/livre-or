@@ -6,11 +6,12 @@ use Core\BaseController;
 use App\Models\UserModel;
 
 
- /* //! Controleur Profile
+/* //! Controleur Profile
  * - show() : affiche le profil et formulaires
  * - changePassword() : POST -> change mot de passe (vérifie ancien mdp)
  * - delete() : POST -> supprime le compte après vérification du mot de passe
  */
+
 class ProfileController extends BaseController
 {
     public function show(): void
@@ -27,7 +28,7 @@ class ProfileController extends BaseController
 
         // Créer le modèle avant de l'utiliser
         $userModel = new UserModel();
-        
+
         // Récupération des données utilisateur
         $user = $userModel->findById((int)$_SESSION['user_id']);
 
@@ -168,6 +169,60 @@ class ProfileController extends BaseController
         $hash = password_hash($new, PASSWORD_DEFAULT);
         $ok = $userModel->updatePassword((int)$_SESSION['user_id'], $hash);
         $_SESSION['flash'] = $ok ? 'Le mot de passe a bien été mis à jour!' : 'Le mot de passe ne respecte pas les exigences et n\'a donc pas été mis à jour du mot de passe.';
+        header('Location: /profil');
+        exit;
+    }
+
+    //! Fonction pour changement de login
+    public function changeLogin(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo 'Cette méthode n\'est pas autorisée';
+            return;
+        }
+        if (empty($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $token = $_POST['csrf_token'] ?? null;
+        if (!$this->verifyCsrfToken($token)) {
+            $logDir = __DIR__ . '/../../logs';
+            @mkdir($logDir, 0755, true);
+            @file_put_contents($logDir . '/security.log', '[' . date('Y-m-d H:i:s') . '] CSRF_FAILURE route=profil/login ip=' . ($_SERVER['REMOTE_ADDR'] ?? '') . PHP_EOL, FILE_APPEND | LOCK_EX);
+
+            $_SESSION['flash'] = 'Requête invalide (token).';
+            header('Location: /profil');
+            exit;
+        }
+
+        $newLogin = trim($_POST['new_login'] ?? '');
+
+        $errors = [];
+        if ($newLogin === '') {
+            $errors[] = 'Le nouveau login est requis.';
+        }
+
+        $userModel = new UserModel();
+
+        // Vérifier si le nouveau login est déjà pris par un autre utilisateur
+        $existingUser = $userModel->findByLogin($newLogin);
+        if ($existingUser && (int)$existingUser['id'] !== (int)$_SESSION['user_id']) {
+            $errors[] = 'Ce login est déjà utilisé par un autre compte.';
+        }
+
+        if (empty($errors)) {
+            $ok = $userModel->updateLogin((int)$_SESSION['user_id'], $newLogin);
+            if ($ok) {
+                $_SESSION['login'] = $newLogin; // Mettre à jour le login en session
+                $_SESSION['flash'] = 'Le login a bien été mis à jour!';
+            } else {
+                $_SESSION['flash'] = 'Erreur lors de la mise à jour du login.';
+            }
+        } else {
+            $_SESSION['flash'] = implode('<br>', $errors);
+        }
         header('Location: /profil');
         exit;
     }

@@ -24,6 +24,7 @@ class UserModel
             $stmt = $pdo->prepare('INSERT INTO utilisateurs (login, password, avatar, role) VALUES (:login, :password, :avatar, :role)');
             return $stmt->execute([':login' => $login, ':password' => $hash, ':avatar' => $avatar, ':role' => 'user']);
         } catch (PDOException $e) {
+            error_log("Erreur PDO lors de la création de l'utilisateur : " . $e->getMessage());
             return false;
         }
     }
@@ -95,6 +96,17 @@ class UserModel
             $pdo = Database::getPdo();
             $stmt = $pdo->prepare('UPDATE utilisateurs SET role = :role WHERE id = :id');
             return $stmt->execute([':role' => $role, ':id' => $id]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    //! Mettre à jour le login d'un utilisateur
+    public function updateLogin(int $id, string $newLogin): bool
+    {
+        try {
+            $pdo = Database::getPdo();
+            $stmt = $pdo->prepare('UPDATE utilisateurs SET login = :login WHERE id = :id');
+            return $stmt->execute([':login' => $newLogin, ':id' => $id]);
         } catch (PDOException $e) {
             return false;
         }

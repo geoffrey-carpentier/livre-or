@@ -41,6 +41,7 @@ $router->post('/login', 'App\\Controllers\\AuthController@login');
 $router->post('/comments/new', 'App\\Controllers\\CommentController@create');
 $router->post('/profil/avatar', 'App\\Controllers\\ProfileController@uploadAvatar');
 $router->post('/profil/password', 'App\\Controllers\\ProfileController@changePassword');
+$router->post('/profil/login', 'App\\Controllers\\ProfileController@changeLogin');
 $router->post('/profil/delete', 'App\\Controllers\\ProfileController@delete');
 
 // Modification et suppression de commentaires (POST)

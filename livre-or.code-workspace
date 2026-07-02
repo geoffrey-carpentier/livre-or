@@ -1,9 +1,5 @@
 {
-  "folders": [
-    {
-      "path": "."
-    }
-  ],
+  "folders": [],
   "settings": {
     "chat.emptyState.history.enabled": true
   }

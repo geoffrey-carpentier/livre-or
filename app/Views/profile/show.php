@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Vue : profil utilisateur
  * Variables : $user, $csrf
@@ -14,11 +15,11 @@
 
   <div class="flex items-center gap-4">
     <?php
-      $avatar = $user['avatar'] ?? '';
-      if (!$avatar) {
-        $seed = urlencode($user['login'] ?? 'anon');
-        $avatar = "https://avatars.dicebear.com/api/identicon/{$seed}.svg";
-      }
+    $avatar = $user['avatar'] ?? '';
+    if (!$avatar) {
+      $seed = urlencode($user['login'] ?? 'anon');
+      $avatar = "https://avatars.dicebear.com/api/identicon/{$seed}.svg";
+    }
     ?>
     <img src="<?= htmlspecialchars($avatar, ENT_QUOTES, 'UTF-8') ?>" alt="Avatar de l'utilisateur" class="w-20 h-20 rounded-md object-cover">
     <div>
@@ -26,6 +27,20 @@
       <div class="font-semibold"><?= htmlspecialchars($user['login'] ?? '', ENT_QUOTES, 'UTF-8') ?></div>
     </div>
   </div>
+
+  <hr class="my-4">
+
+  <h2 class="text-lg">Modifier mon login</h2>
+  <form method="post" action="profil/login">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf ?? '', ENT_QUOTES, 'UTF-8') ?>">
+    <div>
+      <label>Nouveau login</label>
+      <input type="text" name="new_login" value="<?= htmlspecialchars($user['login'] ?? '', ENT_QUOTES, 'UTF-8') ?>" required>
+    </div>
+    <div class="mt-2">
+      <button type="submit">Mettre à jour le login</button>
+    </div>
+  </form>
 
   <hr class="my-4">
 

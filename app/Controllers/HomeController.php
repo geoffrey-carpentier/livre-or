@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Controllers;
 
 use Core\BaseController;
+use App\Models\CommentModel;
 
 /**
  * Classe HomeController
@@ -19,12 +21,12 @@ class HomeController extends BaseController
      */
     public function index(): void
     {
-        // Appelle la méthode render() de BaseController
-        // - Charge la vue "app/Views/home/index.php"
-        // - Injecte le tableau de paramètres (ici, une variable $title utilisable dans la vue)
-        // - Insère le contenu de la vue dans le layout global "base.php"
+        $commentModel = new CommentModel();
+        $latestComments = $commentModel->all(3); // Récupère les 3 derniers commentaires
+
         $this->render('home/index', [
-            'title' => 'LIVRE D\'OR'
+            'title' => 'LIVRE D\'OR',
+            'latest' => $latestComments
         ]);
     }
 }

@@ -5,6 +5,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 ?>
 <!doctype html>
 <html lang="fr" class="bg-gray-900 text-gray-100">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -15,6 +16,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 
   <link rel="stylesheet" href="<?= $base . '/assets/css/style.css' ?>">
 </head>
+
 <body>
   <header>
     <nav>
@@ -34,5 +36,11 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
   <main>
     <?= $content ?? '' ?>
   </main>
+
+  <footer>
+    <p>Projet Livre d'or - &copy; 2026</p>
+    <p><a href="https://github.com/geoffrey-carpentier/livre-or" target="_blank">Voir sur GitHub</a></p>
+  </footer>
 </body>
+
 </html>

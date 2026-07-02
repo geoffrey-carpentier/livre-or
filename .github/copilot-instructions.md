@@ -37,7 +37,7 @@ Keep changes small and empirical — follow existing patterns and prefer the sim
 
   Then open http://localhost:8000/ (or use your Laragon setup).
 
-- Database: run the SQL in `database/livreor.sql` (or `database/livreor_database.sql.txt`) and optionally `database/add_avatar_column.sql` to add avatar column. The Database class reads `DB_*` env vars if set.
+- Database: run the SQL in `database/livreor.sql` (single source of truth, includes the `avatar`/`role` columns). The Database class reads `DB_*` env vars if set.
 
 ## Small but important implementation details for agents
 - There is no Composer autoloader. `public/index.php` includes the core files and controllers/models manually. If you add new controllers/models, either require them in `public/index.php` or implement an autoloader consistently across the project.

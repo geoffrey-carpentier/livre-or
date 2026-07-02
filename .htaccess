@@ -1,4 +1,39 @@
+# ============================================
+# CONFIGURATION GÉNÉRALE
+# ============================================
+
+# Fichier .htaccess pour rediriger toutes les requêtes vers public/index.php
+# Active le moteur de réécriture d'URL d'Apache
+# Permet d'utiliser des règles de réécriture pour rediriger les requêtes vers des fichiers ou dossiers sans avoir à spécifier explicitement le chemin complet.
+
+# (Nécessite mod_rewrite activé et AllowOverride All dans la configuration Apache).
+
+# Sécurité : si le vhost pointe sur la racine du projet (et non sur public/),
+# on interdit l'accès direct aux dossiers sensibles (code métier, base de
+# données, logs) qui ne doivent jamais être servis tels quels par Apache.
 RewriteEngine On
+RewriteRule ^(app|core|database|logs)/ - [F,L]
+
+# Si le fichier ou dossier existe physiquement, laisser Apache le servir
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . index.php [L]
+
+# Si les deux conditions sont vraies, rediriger la requête vers le dossier public/ (en préservant le reste de l'URL $1)
+RewriteRule ^(.*)$ public/$1 [L]
+# Sinon, rediriger vers public/index.php en conservant la query string
+RewriteRule ^(.*)$ public/index.php [QSA,L]
+
+DirectoryIndex public/index.php
+
+# Redirige toutes les requêtes vers public/index.php (front controller)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Si la ressource existe physiquement, la servir (images, css, etc.)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Sinon rediriger vers public/index.php en conservant la query string
+    RewriteRule ^(.*)$ public/index.php [QSA,L]
+</IfModule>

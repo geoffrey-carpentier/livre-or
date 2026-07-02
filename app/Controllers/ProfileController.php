@@ -21,9 +21,7 @@ class ProfileController extends BaseController
         }
 
         if (empty($_SESSION['user_id'])) {
-            $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
-            header('Location: ' . $base . '/login');
-            exit;
+            $this->redirect('/login');
         }
 
         // Créer le modèle avant de l'utiliser
@@ -51,8 +49,7 @@ class ProfileController extends BaseController
         }
         // Vérification de l'authentification de l'utilisateur
         if (empty($_SESSION['user_id'])) {
-            header('Location: /login');
-            exit;
+            $this->redirect('/login');
         }
         // Vérification du token CSRF
         $token = $_POST['csrf_token'] ?? null;
@@ -60,22 +57,19 @@ class ProfileController extends BaseController
             @mkdir(__DIR__ . '/../../logs', 0755, true);
             @file_put_contents(__DIR__ . '/../../logs/security.log', "[" . date('Y-m-d H:i:s') . "] CSRF_FAILURE route=profil/avatar ip=" . ($_SERVER['REMOTE_ADDR'] ?? '') . PHP_EOL, FILE_APPEND | LOCK_EX);
             $_SESSION['flash'] = 'Requête invalide (token).';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
         // Validation du fichier uploadé
         if (!isset($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
             $_SESSION['flash'] = 'Aucun fichier reçu.';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
         // Vérification de la taille du fichier (2Mo max)
         $file = $_FILES['avatar'];
         $maxSize = 2 * 1024 * 1024; // 2MB
         if ($file['size'] > $maxSize) {
             $_SESSION['flash'] = 'Fichier trop grand (max 2MB).';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
         // Vérification du type MIME (png, jpeg, gif ou svg autorisé)
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -84,8 +78,7 @@ class ProfileController extends BaseController
         $allowed = ['image/png' => 'png', 'image/jpeg' => 'jpg', 'image/gif' => 'gif', 'image/svg+xml' => 'svg'];
         if (!isset($allowed[$mime])) {
             $_SESSION['flash'] = 'Type de fichier non autorisé.';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
 
         $ext = $allowed[$mime];
@@ -93,13 +86,14 @@ class ProfileController extends BaseController
         if (!is_dir($uploadDir)) {
             @mkdir($uploadDir, 0755, true);
         }
+        // Nom de fichier généré côté serveur (jamais celui fourni par l'utilisateur)
+        // afin d'éviter tout risque de traversée de chemin ou d'écrasement de fichier.
         $filename = 'avatar_' . (int)$_SESSION['user_id'] . '_' . bin2hex(random_bytes(6)) . '.' . $ext;
         $target = $uploadDir . '/' . $filename;
 
         if (!move_uploaded_file($file['tmp_name'], $target)) {
             $_SESSION['flash'] = 'Erreur lors de l\'upload.';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
 
         // chemin public relatif
@@ -112,8 +106,7 @@ class ProfileController extends BaseController
         } else {
             $_SESSION['flash'] = 'Erreur lors de la mise à jour.';
         }
-        header('Location: /profil');
-        exit;
+        $this->redirect('/profil');
     }
 
     //! Fonction pour changement de mot de passe
@@ -125,8 +118,7 @@ class ProfileController extends BaseController
             return;
         }
         if (empty($_SESSION['user_id'])) {
-            header('Location: /login');
-            exit;
+            $this->redirect('/login');
         }
 
         $token = $_POST['csrf_token'] ?? null;
@@ -137,8 +129,7 @@ class ProfileController extends BaseController
             @file_put_contents($logDir . '/security.log', "[" . date('Y-m-d H:i:s') . "] CSRF_FAILURE route=profil/password ip=" . ($_SERVER['REMOTE_ADDR'] ?? '') . PHP_EOL, FILE_APPEND | LOCK_EX);
 
             $_SESSION['flash'] = 'Requête invalide (token).';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
 
         $current = $_POST['current_password'] ?? '';
@@ -149,28 +140,24 @@ class ProfileController extends BaseController
         $user = $userModel->findById((int)$_SESSION['user_id']);
         if (!$user || !password_verify($current, $user['password'])) {
             $_SESSION['flash'] = 'Ceci n\'est pas votre mot de passe actuel.';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
 
         // Exigences relative au mot de passe: 10 caractères minimum dont 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial
         $policy = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{10,}$/';
         if (!preg_match($policy, $new)) {
             $_SESSION['flash'] = 'Ce mot de passe est invalide. Veuillez saisir au moins 10 caractères dont 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial.';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
         if ($new !== $confirm) {
             $_SESSION['flash'] = 'Les mots de passe ne correspondent pas. Veuillez vérifier votre saisie';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
 
         $hash = password_hash($new, PASSWORD_DEFAULT);
         $ok = $userModel->updatePassword((int)$_SESSION['user_id'], $hash);
         $_SESSION['flash'] = $ok ? 'Le mot de passe a bien été mis à jour!' : 'Le mot de passe ne respecte pas les exigences et n\'a donc pas été mis à jour du mot de passe.';
-        header('Location: /profil');
-        exit;
+        $this->redirect('/profil');
     }
 
     //! Fonction pour changement de login
@@ -182,8 +169,7 @@ class ProfileController extends BaseController
             return;
         }
         if (empty($_SESSION['user_id'])) {
-            header('Location: /login');
-            exit;
+            $this->redirect('/login');
         }
 
         $token = $_POST['csrf_token'] ?? null;
@@ -193,8 +179,7 @@ class ProfileController extends BaseController
             @file_put_contents($logDir . '/security.log', '[' . date('Y-m-d H:i:s') . '] CSRF_FAILURE route=profil/login ip=' . ($_SERVER['REMOTE_ADDR'] ?? '') . PHP_EOL, FILE_APPEND | LOCK_EX);
 
             $_SESSION['flash'] = 'Requête invalide (token).';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
 
         $newLogin = trim($_POST['new_login'] ?? '');
@@ -223,8 +208,7 @@ class ProfileController extends BaseController
         } else {
             $_SESSION['flash'] = implode('<br>', $errors);
         }
-        header('Location: /profil');
-        exit;
+        $this->redirect('/profil');
     }
 
     //! fonction de suppression de compte (nécessite le mot de passe du compte)
@@ -236,8 +220,7 @@ class ProfileController extends BaseController
             return;
         }
         if (empty($_SESSION['user_id'])) { // Si l'utilisateur n'est pas connecté
-            header('Location: /login');
-            exit;
+            $this->redirect('/login');
         }
 
         $token = $_POST['csrf_token'] ?? null;
@@ -245,8 +228,7 @@ class ProfileController extends BaseController
             @mkdir(__DIR__ . '/../../logs', 0755, true);
             @file_put_contents(__DIR__ . '/../../logs/security.log', "[" . date('Y-m-d H:i:s') . "] CSRF_FAILURE route=profil/delete ip=" . ($_SERVER['REMOTE_ADDR'] ?? '') . PHP_EOL, FILE_APPEND | LOCK_EX);
             $_SESSION['flash'] = 'Requête invalide (token).';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
 
         $password = $_POST['password'] ?? '';
@@ -254,8 +236,7 @@ class ProfileController extends BaseController
         $user = $userModel->findById((int)$_SESSION['user_id']);
         if (!$user || !password_verify($password, $user['password'])) {
             $_SESSION['flash'] = 'On a demandé le mot de passe, fallait-il vraiment préciser \"le bon\" ?';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
 
         $ok = $userModel->deleteById((int)$_SESSION['user_id']);
@@ -263,13 +244,10 @@ class ProfileController extends BaseController
             session_unset();
             $_SESSION['flash'] = 'Vous avez été supprimé. Mes sincères condoléances.';
             session_destroy();
-            // redirect home
-            header('Location: /');
-            exit;
+            $this->redirect('/');
         } else {
             $_SESSION['flash'] = 'Erreur lors de la suppression du compte. Vous êtes toujours là.';
-            header('Location: /profil');
-            exit;
+            $this->redirect('/profil');
         }
     }
 }

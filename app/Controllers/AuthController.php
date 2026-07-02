@@ -76,9 +76,7 @@ class AuthController extends BaseController
                 if ($ok) {
                     // message flash simple via session
                     $_SESSION['flash'] = 'Inscription réussie. Vous pouvez vous connecter.';
-                    $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
-                    header('Location: ' . $base . '/login');
-                    exit;
+                    $this->redirect('/login');
                 } else {
                     $errors[] = 'Erreur lors de la création du compte (réessayer).';
                 }
@@ -137,9 +135,7 @@ class AuthController extends BaseController
 
                     // Optionnel : message flash
                     $_SESSION['flash'] = 'Connexion réussie.';
-                    $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
-                    header('Location: ' . $base . '/comments');
-                    exit;
+                    $this->redirect('/comments');
                 }
             }
 
@@ -166,8 +162,6 @@ class AuthController extends BaseController
         // Retire les données de session liés à l'utilisateur
         unset($_SESSION['user_id'], $_SESSION['login']);
         $_SESSION['flash'] = 'Déconnecté.';
-        $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
-        header('Location: ' . $base . '/');
-        exit;
+        $this->redirect('/');
     }
 }

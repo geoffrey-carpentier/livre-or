@@ -99,4 +99,18 @@ class BaseController
 
         return $valid;
     }
+
+    /**
+     * Redirige vers un chemin de l'application en tenant compte de BASE_PATH
+     * (utile si le site n'est pas déployé à la racine du domaine), puis
+     * arrête l'exécution du script.
+     *
+     * @param string $path Chemin relatif commençant par "/", ex: "/login"
+     */
+    protected function redirect(string $path): void
+    {
+        $base = defined('BASE_PATH') ? (BASE_PATH === '/' ? '' : BASE_PATH) : '';
+        header('Location: ' . $base . $path);
+        exit;
+    }
 }

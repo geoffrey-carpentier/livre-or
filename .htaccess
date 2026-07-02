@@ -8,7 +8,11 @@
 
 # (Nécessite mod_rewrite activé et AllowOverride All dans la configuration Apache).
 
+# Sécurité : si le vhost pointe sur la racine du projet (et non sur public/),
+# on interdit l'accès direct aux dossiers sensibles (code métier, base de
+# données, logs) qui ne doivent jamais être servis tels quels par Apache.
 RewriteEngine On
+RewriteRule ^(app|core|database|logs)/ - [F,L]
 
 # Si le fichier ou dossier existe physiquement, laisser Apache le servir
 RewriteCond %{REQUEST_FILENAME} !-f
